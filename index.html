@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map with User Location</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; }
+        #map { height: 100vh; width: 100vw; }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+    // Initialize the map centered on a default location
+    const map = L.map('map').setView([0, 0], 2);  // Start with a global view
+
+    // Load and display OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Request user location on page load
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            // Success callback
+            function(position) {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+
+                // Center map on user's location
+                map.setView([userLat, userLng], 14);  // Zoom in to user's location
+
+                // Add a marker at user's location
+                L.marker([userLat, userLng]).addTo(map)
+                    .bindPopup("You are here!")
+                    .openPopup();
+
+                // Store user's location in local storage
+                localStorage.setItem('userLocation', JSON.stringify({ latitude: userLat, longitude: userLng }));
+                console.log("User location stored:", { latitude: userLat, longitude: userLng });
+            },
+            // Error callback
+            function(error) {
+                console.error("Error getting location:", error);
+                alert("Location access is required for this feature.");
+            },
+            // Options for higher accuracy
+            { enableHighAccuracy: true }
+        );
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+</script>
+
+</body>
+</html>
