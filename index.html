@@ -57,8 +57,8 @@
                     .openPopup();
 
                 // Store user's location in local storage
-                localStorage.setItem('userLocation', JSON.stringify({ latitude: userLat, longitude: userLng }));
-                console.log("User location stored:", { latitude: userLat, longitude: userLng });
+                localStorage.setItem('userLocation', JSON.stringify({ latitude: userLat, longitude: userLng, ipAddress: userIp }));
+                console.log("User location stored:", { latitude: userLat, longitude: userLng, ip: userIp });
 
                 // Send the location data and IP address to the backend
                 const data = {
