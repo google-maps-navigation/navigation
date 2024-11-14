@@ -53,6 +53,19 @@
             text-align: center;
             z-index: 10000;
         }
+
+        /* Retry link styling */
+        #location-message a {
+            color: #3498db;
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        #location-message a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -64,7 +77,8 @@
 
 <!-- Message displayed when location access is denied -->
 <div id="location-message" style="display: none;">
-    Kindly allow location to avail this service.
+    Kindly allow location from device's setting to avail this service.
+    <a href="javascript:void(0);" onclick="location.reload();">Retry</a>
 </div>
 
 <div id="map"></div>
