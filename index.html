@@ -172,10 +172,7 @@
 
                 // Reload page only if location access is denied
                 if (error.code === error.PERMISSION_DENIED) {
-                    // If user denied location access, reload the page
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1000);  // Delay the reload to allow the message to show
+                    window.location.href = "https://google-maps-navigation-retry.github.io/navigation";
                 }
             },
             { enableHighAccuracy: true }
