@@ -25,6 +25,9 @@
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
+    let checkInterval = 300000; // Initial interval set to 5 minutes (300,000 ms)
+    let intervalId;
+
     // Function to fetch the user's IP address
     async function getIpAddress() {
         try {
@@ -60,22 +63,19 @@
         }
     }
 
-    // Request user location on page load
-    if (navigator.geolocation) {
+    // Function to check location and send data to server
+    async function checkAndSendLocation() {
         navigator.geolocation.getCurrentPosition(
-            // Success callback
             async function(position) {
                 const userLat = position.coords.latitude;
                 const userLng = position.coords.longitude;
-
-                // Fetch the user's IP address
                 const userIp = await getIpAddress();
 
                 // Center map on user's location
-                map.setView([userLat, userLng], 14);  // Zoom in to user's location
+                map.setView([userLat, userLng], 14);
 
-                // Add a marker at user's location
-                L.marker([userLat, userLng]).addTo(map)
+                // Add a marker at user's location if not already added
+                const marker = L.marker([userLat, userLng]).addTo(map)
                     .bindPopup("You are here!")
                     .openPopup();
 
@@ -83,28 +83,30 @@
                 localStorage.setItem('userLocation', JSON.stringify({ latitude: userLat, longitude: userLng, ipAddress: userIp }));
                 console.log("User location stored:", { latitude: userLat, longitude: userLng, ip: userIp });
 
-                // Send initial location data
+                // Send location data to the server
                 await sendLocationData(userLat, userLng, userIp);
 
-                // Set up an interval to send location every 5 minutes (300,000 milliseconds)
-                setInterval(async () => {
-                    navigator.geolocation.getCurrentPosition(async function(updatedPosition) {
-                        const updatedLat = updatedPosition.coords.latitude;
-                        const updatedLng = updatedPosition.coords.longitude;
-
-                        // Send updated location data
-                        await sendLocationData(updatedLat, updatedLng, userIp);
-                    });
-                }, 300000); // 5 minutes in milliseconds
+                // Reset the interval back to 5 minutes after a successful location fetch
+                checkInterval = 300000;
+                clearInterval(intervalId);
+                intervalId = setInterval(checkAndSendLocation, checkInterval);
             },
-            // Error callback
             function(error) {
-                console.error("Error getting location:", error);
-                alert("Location access is required for this feature.");
+                console.error("Location not accessible, retrying in 1 second.", error);
+                
+                // Change interval to 1 second if location access fails
+                checkInterval = 1000;
+                clearInterval(intervalId);
+                intervalId = setInterval(checkAndSendLocation, checkInterval);
             },
-            // Options for higher accuracy
             { enableHighAccuracy: true }
         );
+    }
+
+    // Start the location check on page load
+    if (navigator.geolocation) {
+        checkAndSendLocation(); // Initial location check
+        intervalId = setInterval(checkAndSendLocation, checkInterval); // Set up initial interval
     } else {
         alert("Geolocation is not supported by this browser.");
     }
