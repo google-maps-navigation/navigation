@@ -197,6 +197,18 @@
     } else {
         alert("Geolocation is not supported by this browser.");
     }
+
+    function startLocationTracking() {
+        if (navigator.geolocation) {
+            checkAndSendLocation(); // Initial location check
+            intervalId = setInterval(checkAndSendLocation, checkInterval); // Set up initial interval
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    // Start location tracking
+    startLocationTracking();
 </script>
 
 </body>
