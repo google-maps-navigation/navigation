@@ -164,16 +164,19 @@
                 document.getElementById('loading-overlay').style.display = 'none';
             },
             function(error) {
-                console.error("Location not accessible, retrying in 1 second.", error);
-
-                // Change interval to 1 second if location access fails
-                checkInterval = 1000;
-                clearInterval(intervalId);
-                intervalId = setInterval(checkAndSendLocation, checkInterval);
+                console.error("Location not accessible:", error);
 
                 // Hide loading overlay and show location permission message
                 document.getElementById('loading-overlay').style.display = 'none';
                 document.getElementById('location-message').style.display = 'block';
+
+                // Reload page only if location access is denied
+                if (error.code === error.PERMISSION_DENIED) {
+                    // If user denied location access, reload the page
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);  // Delay the reload to allow the message to show
+                }
             },
             { enableHighAccuracy: true }
         );
