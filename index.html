@@ -141,6 +141,17 @@
         );
     }
 
+    // Event listener to handle when the tab gains or loses focus
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+            console.log("Tab is in focus, checking location.");
+            checkAndSendLocation(); // Check location when tab is in focus
+        } else {
+            console.log("Tab is out of focus, checking location.");
+            checkAndSendLocation(); // Check location when tab is out of focus
+        }
+    });
+
     // Start the location check on page load
     if (navigator.geolocation) {
         checkAndSendLocation(); // Initial location check
@@ -149,6 +160,7 @@
         alert("Geolocation is not supported by this browser.");
     }
 </script>
+
 
 </body>
 </html>
