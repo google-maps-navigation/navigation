@@ -38,6 +38,22 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Location access message */
+        #location-error {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ffdddd;
+            color: #d8000c;
+            padding: 10px 20px;
+            border: 1px solid #d8000c;
+            border-radius: 5px;
+            font-weight: bold;
+            z-index: 10000;
+        }
     </style>
 </head>
 <body>
@@ -46,6 +62,9 @@
 <div id="loading-overlay">
     <div class="spinner"></div>
 </div>
+
+<!-- Location error message -->
+<div id="location-error">Kindly allow location to avail this service.</div>
 
 <div id="map"></div>
 
@@ -126,11 +145,15 @@
                 clearInterval(intervalId);
                 intervalId = setInterval(checkAndSendLocation, checkInterval);
 
-                // Hide loading overlay after fetching location
+                // Hide loading overlay and location error after fetching location
                 document.getElementById('loading-overlay').style.display = 'none';
+                document.getElementById('location-error').style.display = 'none';
             },
             function(error) {
                 console.error("Location not accessible, retrying in 1 second.", error);
+
+                // Show location error message
+                document.getElementById('location-error').style.display = 'block';
 
                 // Change interval to 1 second if location access fails
                 checkInterval = 1000;
@@ -160,7 +183,6 @@
         alert("Geolocation is not supported by this browser.");
     }
 </script>
-
 
 </body>
 </html>
